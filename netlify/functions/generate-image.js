@@ -1,10 +1,3 @@
-const { createClient } = require('@supabase/supabase-js');
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
-
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return {
@@ -18,14 +11,21 @@ exports.handler = async (event) => {
     const { prompt, quality, userId } = JSON.parse(event.body);
     const cost = quality === 'hd' ? 10 : 5;
 
-    // Credits check karo
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('credits')
-      .eq('id', userId)
-      .single();
+    // Supabase REST API directly use karenge (no package needed)
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
 
-    if (!profile || profile.credits < cost) {
+    // Credits check
+    const profileRes = await fetch(`${supabaseUrl}/rest/v1/profiles?id=eq.${userId}&select=credits`, {
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`
+      }
+    });
+    const profiles = await profileRes.json();
+    const credits = profiles[0]?.credits;
+
+    if (!credits || credits < cost) {
       return {
         statusCode: 400,
         headers: { 'Access-Control-Allow-Origin': '*' },
@@ -33,8 +33,8 @@ exports.handler = async (event) => {
       };
     }
 
-    // Segmind API call
-    const response = await fetch('https://api.segmind.com/v1/flux1-schnell', {
+    // Segmind image generate karo
+    const segRes = await fetch('https://api.segmind.com/v1/flux1-schnell', {
       method: 'POST',
       headers: {
         'x-api-key': process.env.SEGMIND_API_KEY,
@@ -44,8 +44,6 @@ exports.handler = async (event) => {
         prompt: prompt,
         steps: quality === 'hd' ? 8 : 4,
         seed: Math.floor(Math.random() * 999999),
-        sampler_name: 'euler',
-        scheduler: 'simple',
         samples: 1,
         width: quality === 'hd' ? 1024 : 512,
         height: quality === 'hd' ? 1024 : 512,
@@ -53,35 +51,42 @@ exports.handler = async (event) => {
       })
     });
 
-    const imageData = await response.json();
-
-    if (!imageData.image) {
-      throw new Error('Image generation failed');
-    }
+    const imageData = await segRes.json();
+    if (!imageData.image) throw new Error('Generation failed');
 
     const imageUrl = `data:image/jpeg;base64,${imageData.image}`;
 
     // Credits deduct karo
-    await supabase
-      .from('profiles')
-      .update({ credits: profile.credits - cost })
-      .eq('id', userId);
+    await fetch(`${supabaseUrl}/rest/v1/profiles?id=eq.${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ credits: credits - cost })
+    });
 
     // History save karo
-    await supabase.from('generations').insert({
-      user_id: userId,
-      type: 'image',
-      prompt: prompt,
-      credits_used: cost
+    await fetch(`${supabaseUrl}/rest/v1/generations`, {
+      method: 'POST',
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        type: 'image',
+        prompt: prompt,
+        credits_used: cost
+      })
     });
 
     return {
       statusCode: 200,
       headers: { 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({
-        imageUrl,
-        creditsRemaining: profile.credits - cost
-      })
+      body: JSON.stringify({ imageUrl, creditsRemaining: credits - cost })
     };
 
   } catch (err) {
