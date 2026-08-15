@@ -382,9 +382,6 @@ let isGenerating = false;
 let uploadedImageBase64 = null;
 let uploadedImageMime = null;
 
-// ⚠️ Replace with your own Gemini API key from aistudio.google.com
-const GEMINI_API_KEY = "AIzaSyDkK3HzWMyWI5phMCHi1_kRqIq7W2luzFg";
-
 function handleUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -587,34 +584,42 @@ async function startGen() {
   }, 600);
 
   try {
-    const parts = [{ text: fullPrompt }];
+    let imgUrl;
+
     if (uploadedImageBase64) {
-      parts.push({ inlineData: { mimeType: uploadedImageMime, data: uploadedImageBase64 } });
+      // Upload reference image to Supabase Storage first to get a public URL
+      const fileExt = uploadedImageMime.split('/')[1] || 'jpg';
+      const fileName = `uploads/${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
+      const byteChars = atob(uploadedImageBase64);
+      const byteNumbers = new Array(byteChars.length);
+      for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+      const byteArray = new Uint8Array(byteNumbers);
+
+      const { error: upErr } = await sb.storage
+        .from('Genzap image')
+        .upload(fileName, byteArray, { contentType: uploadedImageMime, upsert: false });
+      if (upErr) throw new Error('Upload failed: ' + upErr.message);
+
+      const { data: pub } = sb.storage.from('Genzap image').getPublicUrl(fileName);
+      const refUrl = pub.publicUrl;
+
+      const encodedPrompt = encodeURIComponent(fullPrompt);
+      imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=kontext&image=${encodeURIComponent(refUrl)}&nologo=true`;
+    } else {
+      const width = imgQuality === 'hd' ? 1024 : 512;
+      const height = imgQuality === 'hd' ? 1024 : 512;
+      const seed = Math.floor(Math.random() * 999999);
+      const encodedPrompt = encodeURIComponent(fullPrompt);
+      imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true&model=flux`;
     }
 
-    const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts }] })
-      }
-    );
-
-    if (!resp.ok) {
-      const errBody = await resp.json().catch(() => ({}));
-      throw new Error(errBody?.error?.message || `Generation failed (${resp.status})`);
-    }
-
-    const data = await resp.json();
-    const resultParts = data?.candidates?.[0]?.content?.parts || [];
-    const imgPart = resultParts.find(p => p.inlineData);
-    if (!imgPart) {
-      const textPart = resultParts.find(p => p.text);
-      throw new Error(textPart?.text?.slice(0, 120) || 'No image returned — try a different prompt');
-    }
-
-    const imgUrl = `data:${imgPart.inlineData.mimeType};base64,${imgPart.inlineData.data}`;
+    await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = resolve;
+      img.onerror = () => reject(new Error('Image generation failed — try again'));
+      img.src = imgUrl;
+      setTimeout(() => reject(new Error('Timeout — try again')), 90000);
+    });
 
     clearInterval(interval);
     fillEl.style.width = '100%';
