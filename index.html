@@ -605,6 +605,15 @@ async function startGen() {
 
       const encodedPrompt = encodeURIComponent(fullPrompt);
       imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=kontext&image=${encodeURIComponent(refUrl)}&nologo=true`;
+
+      // Fetch directly so we can see the real error instead of a generic image-load failure
+      const kontextResp = await fetch(imgUrl);
+      if (!kontextResp.ok) {
+        const errText = await kontextResp.text().catch(() => '');
+        throw new Error(`Edit failed (${kontextResp.status}): ${errText.slice(0, 150) || 'Unknown error'}`);
+      }
+      const blob = await kontextResp.blob();
+      imgUrl = URL.createObjectURL(blob);
     } else {
       const width = imgQuality === 'hd' ? 1024 : 512;
       const height = imgQuality === 'hd' ? 1024 : 512;
