@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Genzap — AI Image Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Clash+Display:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--p:#E040FB;--p2:#7C4DFF;--c:#00E5FF;--y:#FFD740;--g:#00E676;--r:#FF1744;--bg:#08080E;--bg2:#0E0E18;--bg3:#141422;--b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.11);--b3:rgba(255,255,255,0.18);--t1:#FFFFFF;--t2:#C8C8E8;--t3:#7878A8;--r8:8px;--r12:12px;--r16:16px;--r20:20px;--r24:24px;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{font-size:16px;scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--t1);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;overflow-x:hidden;line-height:1.6;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9998;opacity:0.5;}
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.bg-glow::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(224,64,251,0.12) 0%,transparent 70%);top:-200px;left:-100px;animation:drift1 18s ease-in-out infinite alternate;}
+.bg-glow::after{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(0,229,255,0.08) 0%,transparent 70%);bottom:-150px;right:-100px;animation:drift2 22s ease-in-out infinite alternate;}
+@keyframes drift1{to{transform:translate(80px,60px);}}
+@keyframes drift2{to{transform:translate(-60px,-80px);}}
+nav{position:sticky;top:0;z-index:100;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(8,8,14,0.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--b1);}
+.nav-l{display:flex;align-items:center;gap:14px;}
+.hbtn{width:42px;height:42px;background:transparent;border:none;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:5px;padding:8px;border-radius:var(--r8);}
+.hbtn span{display:block;height:2px;border-radius:2px;background:var(--t1);transition:all .3s;}
+.hbtn.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px);}
+.hbtn.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hbtn.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px);}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--p),var(--p2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 4px 16px rgba(224,64,251,0.3);}
+.logo-name{font-family:'Clash Display',sans-serif;font-size:1.35rem;font-weight:700;background:linear-gradient(135deg,var(--p),var(--c));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.02em;}
+.nav-r{display:flex;align-items:center;gap:8px;}
+.btn-login{background:transparent;border:1px solid var(--b2);color:var(--t1);padding:8px 16px;border-radius:30px;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-login:hover{background:var(--b1);}
+.user-pill{display:none;align-items:center;gap:8px;background:var(--b1);border:1px solid var(--b2);border-radius:30px;padding:6px 14px;font-size:0.88rem;font-weight:600;cursor:pointer;}
+.sb-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px);}
+.sb-overlay.open{opacity:1;pointer-events:all;}
+.sidebar{position:fixed;top:0;left:-290px;width:290px;height:100vh;background:var(--bg2);border-right:1px solid var(--b2);z-index:201;transition:left .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.sidebar.open{left:0;}
+.sb-head{padding:20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;}
+.sb-close{width:32px;height:32px;background:var(--b1);border:none;color:var(--t3);border-radius:var(--r8);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+.sb-user{padding:16px 20px;border-bottom:1px solid var(--b1);display:none;}
+.sb-uname{font-weight:700;font-size:1rem;margin-bottom:3px;}
+.sb-uemail{font-size:0.8rem;color:var(--t3);}
+.sb-nav{flex:1;padding:10px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;}
+.si{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r12);cursor:pointer;border:none;background:transparent;color:var(--t3);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;font-weight:500;width:100%;text-align:left;transition:all .2s;}
+.si:hover{background:var(--b1);color:var(--t1);}
+.si.act{background:rgba(224,64,251,0.1);color:var(--p);font-weight:600;}
+.si.red{color:rgba(255,80,80,0.8);}
+.si.red:hover{background:rgba(255,60,60,0.1);color:#FF5555;}
+.si-div{height:1px;background:var(--b1);margin:6px 0;}
+.page{display:none;position:relative;z-index:1;animation:pgIn .25s ease;}
+.page.active{display:block;}
+@keyframes pgIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.hero{padding:52px 20px 36px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:var(--b1);border:1px solid var(--b2);border-radius:30px;padding:6px 16px;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--c);margin-bottom:20px;}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--c);border-radius:50%;animation:pulse 1.8s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(1.3);}}
+.hero h1{font-family:'Clash Display',sans-serif;font-size:clamp(2.6rem,8vw,3.2rem);font-weight:700;line-height:1.05;letter-spacing:-0.03em;margin-bottom:14px;}
+.grd1{background:linear-gradient(135deg,var(--p),var(--p2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.grd2{background:linear-gradient(135deg,var(--c),#0080FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{color:var(--t2);font-size:1rem;line-height:1.7;max-width:320px;margin:0 auto 28px;}
+.hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;border:none;padding:14px 28px;border-radius:var(--r16);font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(224,64,251,0.3);transition:all .2s;}
+.btn-primary:hover{transform:translateY(-2px);}
+.btn-ghost{background:transparent;border:1px solid var(--b3);color:var(--t1);padding:14px 28px;border-radius:var(--r16);font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-ghost:hover{background:var(--b1);}
+.free-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.3);border-radius:var(--r12);padding:10px 18px;font-size:0.88rem;font-weight:700;color:var(--g);margin-bottom:24px;}
+.sec{padding:28px 16px;}
+.sec-lbl{font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
+.sec-title{font-family:'Clash Display',sans-serif;font-size:1.65rem;font-weight:700;margin-bottom:18px;letter-spacing:-0.02em;}
+.sec-title em{font-style:normal;background:linear-gradient(135deg,var(--y),#FF6D00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.mcard{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r20);padding:20px;margin-bottom:12px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.mcard::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;}
+.mcard.img::before{background:radial-gradient(ellipse at 0% 50%,rgba(224,64,251,0.1),transparent 60%);}
+.mcard:hover{border-color:var(--b2);transform:translateY(-2px);}
+.mcard:hover::before{opacity:1;}
+.mbadge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:0.7rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px;background:rgba(224,64,251,0.12);color:var(--p);border:1px solid rgba(224,64,251,0.25);}
+.mcard h3{font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:600;margin-bottom:7px;}
+.mcard p{font-size:0.9rem;color:var(--t3);line-height:1.6;}
+.mtags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+.mtag{background:var(--b1);border:1px solid var(--b2);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:var(--t2);}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px 28px;}
+.stat{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r16);padding:16px 12px;text-align:center;}
+.stat-n{font-family:'Clash Display',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:4px;}
+.stat:nth-child(1) .stat-n{color:var(--p);}
+.stat:nth-child(2) .stat-n{color:var(--c);}
+.stat:nth-child(3) .stat-n{color:var(--y);}
+.stat-l{font-size:0.72rem;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;}
+.gen-wrap{padding:14px;}
+.out-area{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r20);min-height:300px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;position:relative;overflow:hidden;}
+.out-empty{text-align:center;padding:40px 20px;}
+.out-empty .ei{font-size:3rem;opacity:0.2;margin-bottom:12px;}
+.out-empty h3{font-family:'Clash Display',sans-serif;font-size:1.1rem;color:var(--t3);margin-bottom:6px;}
+.out-empty p{font-size:0.85rem;color:var(--t3);opacity:0.7;}
+.out-loading{display:none;flex-direction:column;align-items:center;gap:16px;padding:40px;width:100%;}
+.spin{width:52px;height:52px;border:3px solid var(--b2);border-top-color:var(--p);border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.load-txt{font-family:'Clash Display',sans-serif;font-size:1rem;color:var(--t2);text-align:center;}
+.load-sub{font-size:0.82rem;color:var(--t3);text-align:center;margin-top:-8px;}
+.load-bar{width:200px;height:4px;background:var(--b1);border-radius:4px;overflow:hidden;}
+.load-fill{height:100%;background:linear-gradient(90deg,var(--p),var(--p2),var(--c));border-radius:4px;width:0%;transition:width 0.8s ease;}
+.out-result{display:none;width:100%;padding:14px;}
+.result-img{width:100%;border-radius:var(--r16);display:block;}
+.out-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.act-btn{padding:11px 8px;border-radius:var(--r12);border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.act-dl{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;}
+.act-regen{background:var(--b1);border:1px solid var(--b2);color:var(--t1);}
+.act-wa{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;}
+.act-save{background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.25);color:var(--c);}
+.prompt-wrap{position:relative;margin-bottom:12px;}
+.prompt-box{width:100%;background:var(--bg3);border:1.5px solid var(--b2);border-radius:var(--r16);padding:14px 44px 14px 16px;color:var(--t1);font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;resize:none;outline:none;height:108px;line-height:1.65;transition:border-color .2s;}
+.upload-btn{position:absolute;right:10px;bottom:10px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--p2));border:none;color:#fff;font-size:1.2rem;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(224,64,251,0.4);}
+.upload-preview{display:none;align-items:center;gap:10px;background:var(--bg3);border:1.5px solid var(--b2);border-radius:var(--r12);padding:8px 10px;margin-bottom:10px;}
+.upload-preview img{width:44px;height:44px;border-radius:8px;object-fit:cover;}
+.upload-preview .upl-txt{flex:1;font-size:0.82rem;color:var(--t2);}
+.upload-preview .upl-x{background:none;border:none;color:var(--t3);font-size:1.2rem;cursor:pointer;padding:4px 8px;}
+.prompt-box::placeholder{color:var(--t3);}
+.prompt-box:focus{border-color:var(--p);}
+.opts-card{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r16);padding:16px;margin-bottom:12px;}
+.opts-lbl{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:10px;}
+.qual-row{display:flex;gap:8px;margin-bottom:12px;}
+.qual-btn{flex:1;padding:11px 8px;border-radius:var(--r12);border:1px solid var(--b1);background:transparent;color:var(--t3);font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:all .2s;text-align:center;}
+.qual-btn.on{background:rgba(224,64,251,0.12);border-color:rgba(224,64,251,0.35);color:var(--t1);}
+.qual-btn .ql{font-size:0.88rem;font-weight:700;}
+.qual-btn .qc{font-size:0.72rem;color:var(--c);margin-top:2px;}
+.chips{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{padding:7px 14px;border-radius:20px;border:1px solid var(--b1);background:transparent;color:var(--t3);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.chip.on{background:rgba(224,64,251,0.12);border-color:rgba(224,64,251,0.35);color:var(--p);}
+.tmpl-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;scrollbar-width:none;}
+.tmpl-scroll::-webkit-scrollbar{display:none;}
+.tmpl-chip{flex-shrink:0;padding:8px 14px;border-radius:20px;border:1px solid var(--b2);background:var(--bg3);color:var(--t2);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.tmpl-chip:hover{border-color:var(--p);color:var(--p);}
+.gen-btn{width:100%;padding:16px;border-radius:var(--r16);border:none;font-family:'Clash Display',sans-serif;font-size:1.15rem;font-weight:600;cursor:pointer;transition:all .22s;margin-top:4px;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;box-shadow:0 6px 24px rgba(224,64,251,0.28);}
+.gen-btn:active{transform:scale(0.98);}
+.free-note{text-align:center;font-size:0.85rem;color:var(--g);margin-top:8px;font-weight:600;}
+.hist-wrap{padding:14px;}
+.pg-title{font-family:'Clash Display',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:14px;}
+.hist-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.hi{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r16);overflow:hidden;position:relative;}
+.hi img{width:100%;display:block;aspect-ratio:1;object-fit:cover;}
+.hi-info{padding:10px;}
+.hi-pr{font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
+.hi-mt{font-size:0.72rem;color:var(--t3);display:flex;justify-content:space-between;}
+.hi-ov{position:absolute;inset:0;background:rgba(0,0,0,0.78);display:flex;align-items:center;justify-content:center;gap:8px;opacity:0;transition:opacity .2s;}
+.hi:hover .hi-ov,.hi:active .hi-ov{opacity:1;}
+.hb{width:36px;height:36px;border-radius:var(--r8);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+.hbd{background:linear-gradient(135deg,var(--p),var(--p2));}
+.hbx{background:rgba(255,23,68,0.25);border:1px solid rgba(255,23,68,0.4);}
+.empty-st{text-align:center;padding:52px 20px;color:var(--t3);}
+.fp{padding:18px 16px 36px;}
+.fp h2{font-family:'Clash Display',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:16px;}
+.fp h3{font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:600;margin:20px 0 8px;color:var(--t2);}
+.fp p{font-size:0.92rem;color:var(--t2);line-height:1.75;margin-bottom:10px;}
+.fp a{color:var(--p);}
+.back-btn{display:inline-flex;align-items:center;gap:7px;background:var(--b1);color:var(--t3);padding:8px 16px;border-radius:var(--r12);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.85rem;cursor:pointer;margin-bottom:18px;border:none;}
+.ccard{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r16);overflow:hidden;margin-top:12px;}
+.citem{display:flex;align-items:center;gap:13px;padding:14px 15px;border-bottom:1px solid var(--b1);}
+.citem:last-child{border-bottom:none;}
+.cico{width:36px;height:36px;background:rgba(224,64,251,0.1);border-radius:var(--r8);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.clbl{font-size:0.75rem;color:var(--t3);margin-bottom:2px;}
+.cval{font-size:0.92rem;font-weight:600;}
+.bot-foot{background:var(--bg2);border-top:1px solid var(--b1);padding:20px 16px;margin-top:32px;}
+.foot-links{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-bottom:10px;}
+.foot-links a{font-size:0.85rem;color:var(--t3);cursor:pointer;transition:color .2s;}
+.foot-links a:hover{color:var(--t1);}
+.foot-copy{text-align:center;font-size:0.78rem;color:var(--t3);}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(10px);z-index:300;display:none;align-items:flex-end;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r24) var(--r24) 0 0;padding:24px 18px 36px;width:100%;max-width:480px;animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.m-handle{width:38px;height:3px;background:var(--b2);border-radius:2px;margin:0 auto 18px;}
+.modal h2{font-family:'Clash Display',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:4px;}
+.modal .msub{font-size:0.88rem;color:var(--t3);margin-bottom:20px;}
+.fg{margin-bottom:13px;}
+.fg label{display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--t3);margin-bottom:7px;}
+.fg input{width:100%;background:var(--bg3);border:1.5px solid var(--b1);border-radius:var(--r12);padding:13px 15px;color:var(--t1);font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;outline:none;transition:border-color .2s;}
+.fg input:focus{border-color:var(--p);}
+.fg input::placeholder{color:var(--t3);}
+.bfull{width:100%;padding:14px;border-radius:var(--r12);border:none;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:4px;}
+.m-tog{text-align:center;margin-top:14px;font-size:0.9rem;color:var(--t3);}
+.m-tog a{color:var(--p);cursor:pointer;font-weight:700;}
+.divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--t3);font-size:0.78rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--b1);}
+.btn-google{width:100%;padding:13px;border-radius:var(--r12);border:1px solid var(--b2);background:transparent;color:var(--t1);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.92rem;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s;}
+.btn-google:hover{background:var(--b1);}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid var(--b2);border-radius:var(--r12);padding:10px 20px;font-size:0.88rem;font-weight:600;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;max-width:88vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:rgba(0,230,118,0.4);color:var(--g);}
+.toast.warn{border-color:rgba(255,215,64,0.4);color:var(--y);}
+.toast.err{border-color:rgba(255,23,68,0.4);color:var(--r);}
+@media(max-width:360px){.hero h1{font-size:2.2rem;}}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="sb-overlay" id="sbOv" onclick="closeSB()"></div>
+<div class="sidebar" id="sb">
+  <div class="sb-head"><div class="logo"><div class="logo-mark">⚡</div><span class="logo-name">Genzap</span></div><button class="sb-close" onclick="closeSB()">✕</button></div>
+  <div class="sb-user" id="sbUser"><div class="sb-uname" id="sbName">User</div><div class="sb-uemail" id="sbEmail"></div></div>
+  <div class="sb-nav">
+    <button class="si act" onclick="navTo('home')"><span>🏠</span> Home</button>
+    <button class="si" onclick="navTo('generate')"><span>✨</span> Generate Image</button>
+    <button class="si" onclick="navTo('history')"><span>🕐</span> My History</button>
+    <div class="si-div"></div>
+    <button class="si" onclick="navTo('terms')"><span>📄</span> Terms & Conditions</button>
+    <button class="si" onclick="navTo('privacy')"><span>🔒</span> Privacy Policy</button>
+    <button class="si" onclick="navTo('about')"><span>ℹ️</span> About Us</button>
+    <button class="si" onclick="navTo('contact')"><span>✉️</span> Contact Us</button>
+    <div class="si-div"></div>
+    <button class="si red" id="sbSignout" style="display:none" onclick="doLogout()"><span>↩</span> Sign Out</button>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-l"><button class="hbtn" id="hbtn" onclick="toggleSB()"><span></span><span></span><span></span></button><div class="logo" onclick="navTo('home')"><div class="logo-mark">⚡</div><span class="logo-name">Genzap</span></div></div>
+  <div class="nav-r">
+    <div class="user-pill" id="userPill" onclick="toggleSB()"><span>👤</span><span id="userPillName">User</span></div>
+    <button class="btn-login" id="btnLogin" onclick="openAuth('login')">Sign In</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-badge">✦ AI Powered Studio</div>
+    <h1><span class="grd1">Generate</span><br><span class="grd2">Anything</span></h1>
+    <p>Turn your ideas into stunning AI images in seconds — completely free, no skills needed.</p>
+    <div class="free-badge">🎉 100% Free — Unlimited Image Generation</div>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="navTo('generate')">⚡ Start Creating</button>
+      <button class="btn-ghost" onclick="openAuth('signup')">Create Account</button>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">🖼 Image Generation</div>
+    <div class="sec-title">Create Stunning <em>Images</em></div>
+    <div class="mcard img" onclick="navTo('generate')">
+      <div class="mbadge">🖼 Image AI</div>
+      <h3>Generate Image</h3>
+      <p>Powerful AI image generation. Creates stunning photorealistic, artistic and cinematic images from your text prompts — completely free.</p>
+      <div class="mtags"><span class="mtag">✅ 100% Free</span><span class="mtag">⚡ Fast</span><span class="mtag">🎨 All Styles</span><span class="mtag">📱 Mobile First</span></div>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n">Free</div><div class="stat-l">Always</div></div>
+    <div class="stat"><div class="stat-n">Fast</div><div class="stat-l">Generation</div></div>
+    <div class="stat"><div class="stat-n">HD</div><div class="stat-l">Quality</div></div>
+  </div>
+  <div class="bot-foot">
+    <div class="foot-links"><a onclick="navTo('terms')">Terms</a><a onclick="navTo('privacy')">Privacy</a><a onclick="navTo('about')">About</a><a onclick="navTo('contact')">Contact</a></div>
+    <div class="foot-copy">© 2026 Genzap · Made with ❤ in India</div>
+  </div>
+</div>
+
+<!-- GENERATE -->
+<div class="page" id="page-generate">
+  <div class="gen-wrap">
+    <div class="out-area" id="outArea">
+      <div class="out-loading" id="outLoading">
+        <div class="spin"></div>
+        <div class="load-txt" id="loadTxt">Creating your image...</div>
+        <div class="load-sub">Please wait 10-30 seconds</div>
+        <div class="load-bar"><div class="load-fill" id="loadFill"></div></div>
+      </div>
+      <div class="out-empty" id="outEmpty">
+        <div class="ei">✨</div>
+        <h3>Your Creation Appears Here</h3>
+        <p>Write a prompt below and tap Generate</p>
+      </div>
+      <div class="out-result" id="outResult">
+        <img id="resultImg" class="result-img" alt="Generated Image">
+        <div class="out-actions">
+          <button class="act-btn act-regen" onclick="regenerate()">↺ Regenerate</button>
+          <button class="act-btn act-dl" onclick="downloadImg()">⬇ Download</button>
+          <button class="act-btn act-wa" onclick="shareWA()">🟢 WhatsApp</button>
+          <button class="act-btn act-save" onclick="saveToHistory()">💾 Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="opts-lbl" style="margin-bottom:8px;">✨ Quick Prompts</div>
+    <div class="tmpl-scroll" id="tmplScroll"></div>
+
+    <div class="upload-preview" id="uploadPreview">
+      <img id="uploadPreviewImg" alt="Uploaded reference">
+      <div class="upl-txt">Reference image attached — AI will edit this</div>
+      <button class="upl-x" onclick="clearUpload()">✕</button>
+    </div>
+    <div class="prompt-wrap">
+      <textarea class="prompt-box" id="promptBox" placeholder="Describe what you want to create...&#10;&#10;e.g. A futuristic city at sunset, neon lights, cinematic 4K"></textarea>
+      <button class="upload-btn" onclick="document.getElementById('uploadInput').click()" title="Upload image to edit">+</button>
+      <input type="file" id="uploadInput" accept="image/*" style="display:none" onchange="handleUpload(event)">
+    </div>
+
+    <div class="opts-card">
+      <div class="opts-lbl">Image Quality</div>
+      <div class="qual-row">
+        <button class="qual-btn on" id="qStd" onclick="setQ('std')"><div class="ql">Standard</div><div class="qc">512px • Fast</div></button>
+        <button class="qual-btn" id="qHd" onclick="setQ('hd')"><div class="ql">HD Quality</div><div class="qc">1024px • Slower</div></button>
+      </div>
+      <div class="opts-lbl">Art Style</div>
+      <div class="chips">
+        <button class="chip on" onclick="toggleChip(this)">Photorealistic</button>
+        <button class="chip" onclick="toggleChip(this)">Anime</button>
+        <button class="chip" onclick="toggleChip(this)">Cinematic</button>
+        <button class="chip" onclick="toggleChip(this)">3D Render</button>
+        <button class="chip" onclick="toggleChip(this)">Watercolor</button>
+        <button class="chip" onclick="toggleChip(this)">Oil Painting</button>
+        <button class="chip" onclick="toggleChip(this)">Sketch</button>
+        <button class="chip" onclick="toggleChip(this)">Abstract</button>
+      </div>
+    </div>
+
+    <button class="gen-btn" onclick="startGen()">⚡ Generate Image</button>
+    <div class="free-note">🎉 Free • Unlimited • No signup required</div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="page" id="page-history">
+  <div class="hist-wrap">
+    <div class="pg-title">My History 🕐</div>
+    <div id="histEmpty" class="empty-st">
+      <span style="font-size:3rem;opacity:0.2;display:block;margin-bottom:12px;">🌌</span>
+      <p style="margin-bottom:14px;">No creations yet!</p>
+      <button class="btn-primary" onclick="navTo('generate')">⚡ Start Generating</button>
+    </div>
+    <div class="hist-grid" id="histGrid"></div>
+  </div>
+</div>
+
+<!-- TERMS -->
+<div class="page" id="page-terms"><div class="fp"><button class="back-btn" onclick="navTo('home')">← Back</button><h2>📄 Terms & Conditions</h2><p>Last updated: June 2026.</p><h3>1. Eligibility</h3><p>You must be at least 13 years old to use Genzap.</p><h3>2. Acceptable Use</h3><p>You agree not to generate illegal, harmful, hateful, or sexually explicit content. Accounts violating these rules will be suspended.</p><h3>3. Service</h3><p>Genzap provides free AI image generation. We reserve the right to modify or discontinue the service at any time.</p><h3>4. Content Ownership</h3><p>You own all content you generate on Genzap.</p><h3>5. Governing Law</h3><p>Governed by Indian law. Disputes resolved in Motihari, Bihar, India.</p><h3>6. Contact</h3><p><a href="mailto:genzap01@gmail.com">genzap01@gmail.com</a></p></div></div>
+
+<!-- PRIVACY -->
+<div class="page" id="page-privacy"><div class="fp"><button class="back-btn" onclick="navTo('home')">← Back</button><h2>🔒 Privacy Policy</h2><p>Last updated: June 2026.</p><h3>Data We Collect</h3><p>If you create an account, we collect your email address. We also store your generation history to show it back to you. We never sell your data.</p><h3>Data Security</h3><p>All data is stored on encrypted Supabase servers. You can request deletion anytime by emailing us.</p><h3>Cookies</h3><p>We use minimal cookies only for keeping you logged in.</p><h3>Contact</h3><p><a href="mailto:genzap01@gmail.com">genzap01@gmail.com</a></p></div></div>
+
+<!-- ABOUT -->
+<div class="page" id="page-about"><div class="fp"><button class="back-btn" onclick="navTo('home')">← Back</button><h2>ℹ️ About Genzap</h2><h3>Our Mission</h3><p>Genzap is a free AI image generation studio built for everyone in India. We believe powerful AI tools should be accessible to all — completely free.</p><h3>What We Offer</h3><p>Generate stunning AI images from text prompts in seconds. No skills needed, no payment required.</p><h3>Location</h3><p>Motihari, Bihar, India 🇮🇳</p><h3>Contact</h3><p><a href="mailto:genzap01@gmail.com">genzap01@gmail.com</a></p></div></div>
+
+<!-- CONTACT -->
+<div class="page" id="page-contact"><div class="fp"><button class="back-btn" onclick="navTo('home')">← Back</button><h2>✉️ Contact Us</h2><p>We'd love to hear from you!</p><div class="ccard"><div class="citem"><div class="cico">📧</div><div><div class="clbl">Email</div><div class="cval">genzap01@gmail.com</div></div></div><div class="citem"><div class="cico">⏰</div><div><div class="clbl">Response Time</div><div class="cval">Within 24 hours</div></div></div><div class="citem"><div class="cico">📍</div><div><div class="clbl">Location</div><div class="cval">Motihari, Bihar, India</div></div></div></div><h3>For Support</h3><p>Having issues? Email us with your account email and describe the problem.</p></div></div>
+
+<!-- AUTH MODAL -->
+<div class="modal-bg" id="authModal">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <h2 id="authTitle">Welcome Back</h2>
+    <p class="msub" id="authSub">Sign in to save your history</p>
+    <div class="fg"><label>Email</label><input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="fg"><label>Password</label><input type="password" id="authPass" placeholder="••••••••" autocomplete="current-password"></div>
+    <div class="fg" id="nameFld" style="display:none"><label>Your Name</label><input type="text" id="authName" placeholder="Your name"></div>
+    <button class="bfull" id="authSubmitBtn" onclick="doAuth()"><span id="authBtnTxt">Sign In</span></button>
+    <div class="divider">or</div>
+    <button class="btn-google" onclick="doGoogleAuth()">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.706c-.18-.54-.282-1.117-.282-1.706s.102-1.166.282-1.706V4.962H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+      Continue with Google
+    </button>
+    <div class="m-tog"><span id="togTxt">Don't have an account?</span> <a onclick="toggleAuthMode()"><span id="togLink">Sign up free</span></a></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══ CONFIG ═══
+const SUPABASE_URL = 'https://dgqiezctuzsqkqpqyzqb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRncWllemN0dXpzcWtxcHF5enFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNDQ4ODYsImV4cCI6MjA5NTcyMDg4Nn0.8C8fp3bKaQ1hYcNlAu1VjyAUduiR4kd5TnTTDr1VqDg';
+
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ═══ STATE ═══
+let toastTimer = null;
+let currentUser = null;
+let gallery = [];
+let authMode = 'login';
+let afterAuthPage = null;
+let imgQuality = 'std';
+let lastImgUrl = null;
+let lastPrompt = null;
+let isGenerating = false;
+let uploadedImageBase64 = null;
+let uploadedImageMime = null;
+const POLLINATIONS_API_KEY = "sk_nhFwEIV2JUdDXNrIA3w0burD8VNlsHXj";
+
+function handleUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('Please upload an image file', 'warn'); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const result = reader.result; // data:image/xxx;base64,....
+    uploadedImageMime = file.type;
+    uploadedImageBase64 = result.split(',')[1];
+    document.getElementById('uploadPreviewImg').src = result;
+    document.getElementById('uploadPreview').style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearUpload() {
+  uploadedImageBase64 = null;
+  uploadedImageMime = null;
+  document.getElementById('uploadInput').value = '';
+  document.getElementById('uploadPreview').style.display = 'none';
+}
+
+const TEMPLATES = [
+  'Anime girl in cherry blossom garden',
+  'Cyberpunk city at night, neon lights',
+  'Indian bride portrait, golden jewelry',
+  'Futuristic robot warrior, cinematic',
+  'Mountain sunset, photorealistic 4K',
+  'Abstract colorful explosion art',
+  'Fantasy dragon over castle',
+  'Product photo on white background',
+  'Portrait of a samurai warrior',
+  'Beautiful Indian landscape at dawn'
+];
+
+// ═══ INIT ═══
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) loadUser(session.user);
+  loadTemplates();
+  const hash = location.hash.replace('#','');
+  const pages = ['home','generate','history','terms','privacy','about','contact'];
+  if (hash && pages.includes(hash)) navTo(hash, false);
+})();
+
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session?.user) {
+    loadUser(session.user);
+    if (afterAuthPage) { navTo(afterAuthPage); afterAuthPage = null; }
+  } else if (event === 'SIGNED_OUT') {
+    currentUser = null;
+    updateNavUI(false);
+  }
+});
+
+function loadUser(user) {
+  currentUser = user;
+  updateNavUI(true);
+}
+
+// ═══ SIDEBAR + NAV ═══
+function toggleSB() { ['sb','sbOv'].forEach(id => document.getElementById(id).classList.toggle('open')); document.getElementById('hbtn').classList.toggle('open'); }
+function closeSB() { ['sb','sbOv'].forEach(id => document.getElementById(id).classList.remove('open')); document.getElementById('hbtn').classList.remove('open'); }
+
+function navTo(page, addHist = true) {
+  closeSB();
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  window.scrollTo(0, 0);
+  if (page === 'history') renderHistory();
+  if (page === 'generate') loadTemplates();
+  try { if (addHist) history.pushState({ page }, '', '#' + page); } catch(e) {}
+}
+window.addEventListener('popstate', e => navTo((e.state?.page) || 'home', false));
+
+function updateNavUI(loggedIn) {
+  const userPill = document.getElementById('userPill');
+  const btnLogin = document.getElementById('btnLogin');
+  if (loggedIn && currentUser) {
+    const name = currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || 'User';
+    userPill.style.display = 'flex';
+    document.getElementById('userPillName').textContent = name;
+    btnLogin.style.display = 'none';
+    document.getElementById('sbUser').style.display = 'block';
+    document.getElementById('sbName').textContent = name;
+    document.getElementById('sbEmail').textContent = currentUser.email || '';
+    document.getElementById('sbSignout').style.display = 'flex';
+  } else {
+    userPill.style.display = 'none';
+    btnLogin.style.display = 'block';
+    document.getElementById('sbUser').style.display = 'none';
+    document.getElementById('sbSignout').style.display = 'none';
+  }
+}
+
+// ═══ AUTH ═══
+function openAuth(mode) {
+  authMode = mode;
+  document.getElementById('authModal').classList.add('open');
+  updateAuthUI();
+}
+function closeAuth() { document.getElementById('authModal').classList.remove('open'); }
+function updateAuthUI() {
+  const l = authMode === 'login';
+  document.getElementById('authTitle').textContent = l ? 'Welcome Back' : 'Create Account';
+  document.getElementById('authSub').textContent = l ? 'Sign in to save your history' : 'Free forever — save your creations';
+  document.getElementById('authBtnTxt').textContent = l ? 'Sign In' : 'Create Account';
+  document.getElementById('togTxt').textContent = l ? "Don't have an account?" : 'Already have an account?';
+  document.getElementById('togLink').textContent = l ? 'Sign up free' : 'Sign in';
+  document.getElementById('nameFld').style.display = l ? 'none' : 'block';
+}
+function toggleAuthMode() { authMode = authMode === 'login' ? 'signup' : 'login'; updateAuthUI(); }
+
+async function doAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const pass = document.getElementById('authPass').value;
+  if (!email || !pass) { toast('Email aur password daalo', 'warn'); return; }
+  if (pass.length < 6) { toast('Password 6+ characters ka hona chahiye', 'warn'); return; }
+  const btn = document.getElementById('authSubmitBtn');
+  btn.disabled = true;
+  document.getElementById('authBtnTxt').textContent = 'Please wait...';
+  try {
+    if (authMode === 'signup') {
+      const name = document.getElementById('authName').value.trim() || 'User';
+      const { data, error } = await sb.auth.signUp({ email, password: pass, options: { data: { name } } });
+      if (error) throw error;
+      if (data.user) {
+        await sb.from('profiles').upsert({ id: data.user.id, email, name, credits: 0, plan: 'Free' });
+        toast('Account bana! 🎉 Ab generate karo!', 'ok');
+        closeAuth();
+      }
+    } else {
+      const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+      if (error) throw error;
+      toast('Welcome back! 👋', 'ok');
+      closeAuth();
+    }
+  } catch (err) {
+    let msg = err.message;
+    if (msg.includes('Invalid login')) msg = 'Email ya password galat hai';
+    if (msg.includes('already registered')) msg = 'Ye email registered hai — Sign in karo';
+    if (msg.includes('Email not confirmed')) msg = 'Email confirm karo — inbox check karo';
+    toast(msg, 'err');
+  }
+  btn.disabled = false;
+  updateAuthUI();
+}
+
+async function doGoogleAuth() {
+  const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+  if (error) toast('Google login error: ' + error.message, 'err');
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  gallery = [];
+  navTo('home');
+  toast('Signed out', 'ok');
+}
+
+document.getElementById('authModal').addEventListener('click', e => { if (e.target.id === 'authModal') closeAuth(); });
+
+// ═══ TEMPLATES ═══
+function loadTemplates() {
+  const sc = document.getElementById('tmplScroll');
+  if (!sc) return;
+  sc.innerHTML = TEMPLATES.map(t => `<button class="tmpl-chip" onclick="useTemplate(this.textContent)">${t}</button>`).join('');
+}
+function useTemplate(t) { document.getElementById('promptBox').value = t; document.getElementById('promptBox').focus(); }
+
+// ═══ GENERATE ═══
+function setQ(q) {
+  imgQuality = q;
+  document.getElementById('qStd').className = 'qual-btn' + (q === 'std' ? ' on' : '');
+  document.getElementById('qHd').className = 'qual-btn' + (q === 'hd' ? ' on' : '');
+}
+function toggleChip(b) { b.classList.toggle('on'); }
+
+async function startGen() {
+  if (isGenerating) { toast('Already generating, please wait...', 'warn'); return; }
+  const prompt = document.getElementById('promptBox').value.trim();
+  if (!prompt) { toast('Prompt likho pehle!', 'warn'); return; }
+
+  const styles = [...document.querySelectorAll('.chip.on')].map(c => c.textContent).join(', ');
+  const fullPrompt = styles ? `${prompt}, ${styles} style, high quality, detailed` : `${prompt}, high quality, detailed`;
+  lastPrompt = fullPrompt;
+  isGenerating = true;
+
+  document.getElementById('outEmpty').style.display = 'none';
+  document.getElementById('outResult').style.display = 'none';
+  document.getElementById('outLoading').style.display = 'flex';
+
+  // Progress animation
+  let progress = 0;
+  const fillEl = document.getElementById('loadFill');
+  fillEl.style.width = '0%';
+  const interval = setInterval(() => {
+    progress = Math.min(progress + Math.random() * 4, 88);
+    fillEl.style.width = progress + '%';
+  }, 600);
+
+  try {
+    let imgUrl;
+
+    if (uploadedImageBase64) {
+      // Upload reference image to Supabase Storage first to get a public URL
+      const fileExt = uploadedImageMime.split('/')[1] || 'jpg';
+      const fileName = `uploads/${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
+      const byteChars = atob(uploadedImageBase64);
+      const byteNumbers = new Array(byteChars.length);
+      for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+      const byteArray = new Uint8Array(byteNumbers);
+
+      const { error: upErr } = await sb.storage
+        .from('Genzap image')
+        .upload(fileName, byteArray, { contentType: uploadedImageMime, upsert: false });
+      if (upErr) throw new Error('Upload failed: ' + upErr.message);
+
+      const { data: pub } = sb.storage.from('Genzap image').getPublicUrl(fileName);
+      const refUrl = pub.publicUrl;
+
+      const encodedPrompt = encodeURIComponent(fullPrompt);
+      imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=kontext&image=${encodeURIComponent(refUrl)}&nologo=true`;
+
+      // Fetch directly so we can see the real error instead of a generic image-load failure
+      const kontextResp = await fetch(imgUrl, {
+        headers: { 'Authorization': `Bearer ${POLLINATIONS_API_KEY}` }
+      });
+      if (!kontextResp.ok) {
+        const errText = await kontextResp.text().catch(() => '');
+        throw new Error(`Edit failed (${kontextResp.status}): ${errText.slice(0, 150) || 'Unknown error'}`);
+      }
+      const blob = await kontextResp.blob();
+      imgUrl = URL.createObjectURL(blob);
+    } else {
+      const width = imgQuality === 'hd' ? 1024 : 512;
+      const height = imgQuality === 'hd' ? 1024 : 512;
+      const seed = Math.floor(Math.random() * 999999);
+      const encodedPrompt = encodeURIComponent(fullPrompt);
+      imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true&model=flux`;
+    }
+
+    await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = resolve;
+      img.onerror = () => reject(new Error('Image generation failed — try again'));
+      img.src = imgUrl;
+      setTimeout(() => reject(new Error('Timeout — try again')), 90000);
+    });
+
+    clearInterval(interval);
+    fillEl.style.width = '100%';
+    lastImgUrl = imgUrl;
+
+    document.getElementById('resultImg').src = imgUrl;
+    document.getElementById('outLoading').style.display = 'none';
+    document.getElementById('outResult').style.display = 'block';
+
+    // Save to DB if logged in
+    if (currentUser) {
+      await sb.from('generations').insert({
+        user_id: currentUser.id,
+        type: 'image',
+        prompt: prompt.slice(0, 200),
+        credits_used: 0
+      });
+      gallery.unshift({ imgUrl, prompt: prompt.slice(0, 50), date: today() });
+    } else {
+      gallery.unshift({ imgUrl, prompt: prompt.slice(0, 50), date: today() });
+    }
+
+    toast('Image ready! ✨', 'ok');
+    clearUpload();
+
+  } catch (err) {
+    clearInterval(interval);
+    document.getElementById('outLoading').style.display = 'none';
+    document.getElementById('outEmpty').style.display = 'block';
+    toast('Error: ' + err.message, 'err');
+  }
+  isGenerating = false;
+}
+
+function regenerate() {
+  if (!lastPrompt) return;
+  const basePrompt = lastPrompt.split(',')[0].trim();
+  document.getElementById('promptBox').value = basePrompt;
+  startGen();
+}
+
+function downloadImg() {
+  if (!lastImgUrl) return;
+  const a = document.createElement('a');
+  a.href = lastImgUrl;
+  a.download = 'genzap_' + Date.now() + '.jpg';
+  a.click();
+  toast('Downloading ⬇', 'ok');
+}
+
+function shareWA() {
+  const text = 'Dekho ye AI image maine Genzap se banai! ⚡\nhttps://genzap.netlify.app';
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+}
+
+function saveToHistory() {
+  if (!lastImgUrl) return;
+  if (!currentUser) {
+    toast('Account banao history save karne ke liye', 'warn');
+    openAuth('signup');
+    return;
+  }
+  toast('History mein saved! 🖼', 'ok');
+}
+
+// ═══ HISTORY ═══
+async function renderHistory() {
+  const g = document.getElementById('histGrid');
+  const e = document.getElementById('histEmpty');
+
+  if (currentUser) {
+    const { data } = await sb.from('generations')
+      .select('*').eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false }).limit(30);
+
+    if (data && data.length > 0) {
+      e.style.display = 'none';
+      g.innerHTML = data.map(item => `
+        <div class="hi">
+          <div style="width:100%;aspect-ratio:1;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--t3);">🖼</div>
+          <div class="hi-info">
+            <div class="hi-pr">${item.prompt || 'Image'}</div>
+            <div class="hi-mt"><span>image</span><span>${new Date(item.created_at).toLocaleDateString('en-IN')}</span></div>
+          </div>
+        </div>`).join('');
+      return;
+    }
+  }
+
+  if (gallery.length > 0) {
+    e.style.display = 'none';
+    g.innerHTML = gallery.map((item, i) => `
+      <div class="hi">
+        <img src="${item.imgUrl}" alt="${item.prompt}" loading="lazy">
+        <div class="hi-ov">
+          <button class="hb hbd" onclick="dlItem(${i})">⬇</button>
+          <button class="hb hbx" onclick="delItem(${i})">🗑</button>
+        </div>
+        <div class="hi-info">
+          <div class="hi-pr">${item.prompt}</div>
+          <div class="hi-mt"><span>image</span><span>${item.date}</span></div>
+        </div>
+      </div>`).join('');
+  } else {
+    e.style.display = 'block';
+    g.innerHTML = '';
+  }
+}
+
+function dlItem(i) { const a = document.createElement('a'); a.href = gallery[i].imgUrl; a.download = 'genzap_' + i + '.jpg'; a.click(); toast('Downloading ⬇', 'ok'); }
+function delItem(i) { gallery.splice(i, 1); renderHistory(); toast('Deleted', 'ok'); }
+
+// ═══ UTILS ═══
+function today() { return new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
+function toast(msg, type = 'ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + type + ' show';
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+loadTemplates();
+</script>
+</body>
+</html>
