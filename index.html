@@ -588,41 +588,50 @@ async function startGen() {
     let imgUrl;
 
     if (uploadedImageBase64) {
-      // Upload reference image to Supabase Storage first to get a public URL
-      const fileExt = uploadedImageMime.split('/')[1] || 'jpg';
-      const fileName = `uploads/${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
+      // Convert the uploaded base64 back into a real file for multipart upload
       const byteChars = atob(uploadedImageBase64);
       const byteNumbers = new Array(byteChars.length);
       for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
       const byteArray = new Uint8Array(byteNumbers);
+      const fileBlob = new Blob([byteArray], { type: uploadedImageMime });
 
-      const { error: upErr } = await sb.storage
-        .from('Genzap image')
-        .upload(fileName, byteArray, { contentType: uploadedImageMime, upsert: false });
-      if (upErr) throw new Error('Upload failed: ' + upErr.message);
+      const form = new FormData();
+      form.append('image', fileBlob, 'upload.' + (uploadedImageMime.split('/')[1] || 'jpg'));
+      form.append('prompt', fullPrompt);
+      form.append('model', 'kontext');
 
-      const { data: pub } = sb.storage.from('Genzap image').getPublicUrl(fileName);
-      const refUrl = pub.publicUrl;
-
-      const encodedPrompt = encodeURIComponent(fullPrompt);
-      imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=kontext&image=${encodeURIComponent(refUrl)}&nologo=true`;
-
-      // Fetch directly so we can see the real error instead of a generic image-load failure
-      const kontextResp = await fetch(imgUrl, {
-        headers: { 'Authorization': `Bearer ${POLLINATIONS_API_KEY}` }
+      const editResp = await fetch('https://gen.pollinations.ai/v1/images/edits', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${POLLINATIONS_API_KEY}` },
+        body: form
       });
-      if (!kontextResp.ok) {
-        const errText = await kontextResp.text().catch(() => '');
-        throw new Error(`Edit failed (${kontextResp.status}): ${errText.slice(0, 150) || 'Unknown error'}`);
+      if (!editResp.ok) {
+        const errText = await editResp.text().catch(() => '');
+        throw new Error(`Edit failed (${editResp.status}): ${errText.slice(0, 150) || 'Unknown error'}`);
       }
-      const blob = await kontextResp.blob();
-      imgUrl = URL.createObjectURL(blob);
+      const editData = await editResp.json();
+      const item = editData?.data?.[0];
+      imgUrl = item?.url || (item?.b64_json ? `data:image/png;base64,${item.b64_json}` : null);
+      if (!imgUrl) throw new Error('No image returned from edit');
+
     } else {
-      const width = imgQuality === 'hd' ? 1024 : 512;
-      const height = imgQuality === 'hd' ? 1024 : 512;
-      const seed = Math.floor(Math.random() * 999999);
-      const encodedPrompt = encodeURIComponent(fullPrompt);
-      imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true&model=flux`;
+      const size = imgQuality === 'hd' ? '1024x1024' : '512x512';
+      const genResp = await fetch('https://gen.pollinations.ai/v1/images/generations', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${POLLINATIONS_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt: fullPrompt, model: 'flux', size })
+      });
+      if (!genResp.ok) {
+        const errText = await genResp.text().catch(() => '');
+        throw new Error(`Generation failed (${genResp.status}): ${errText.slice(0, 150) || 'Unknown error'}`);
+      }
+      const genData = await genResp.json();
+      const item = genData?.data?.[0];
+      imgUrl = item?.url || (item?.b64_json ? `data:image/png;base64,${item.b64_json}` : null);
+      if (!imgUrl) throw new Error('No image returned from generation');
     }
 
     await new Promise((resolve, reject) => {
@@ -750,6 +759,13 @@ function toast(msg, type = 'ok') {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'toast ' + type + ' show';
   clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+loadTemplates();
+</script>
+</body>
+</html>
+ = setTimeout(() => t.classList.remove('show'), 3500);
 }
 
 loadTemplates();
