@@ -440,6 +440,8 @@ body,button,input,textarea,select{font-family:Inter,'Noto Sans Devanagari',syste
     <div class="si-div"></div>
     <button class="si" data-page="terms" onclick="navTo('terms')"><span>📄</span> <span>Terms &amp; Conditions</span></button>
     <button class="si" data-page="privacy" onclick="navTo('privacy')"><span>🔒</span> <span>Privacy Policy</span></button>
+    <button class="si" data-page="refund" onclick="navTo('refund')"><span>💸</span> <span>Refund Policy</span></button>
+    <button class="si" data-page="cancellation" onclick="navTo('cancellation')"><span>🚫</span> <span>Cancellation Policy</span></button>
     <button class="si" data-page="about" onclick="navTo('about')"><span>ℹ️</span> <span>About Us</span></button>
     <button class="si" data-page="contact" onclick="navTo('contact')"><span>✉️</span> <span>Contact Us</span></button>
     <div class="si-div"></div>
@@ -518,7 +520,7 @@ body,button,input,textarea,select{font-family:Inter,'Noto Sans Devanagari',syste
     <div class="stat fade"><div class="stat-n" data-n="19" data-pre="₹">₹19</div><div class="stat-l">Plans from</div></div>
   </div>
   <div class="bot-foot">
-    <div class="foot-links"><a onclick="navTo('terms')">Terms</a><a onclick="navTo('privacy')">Privacy</a><a onclick="navTo('about')">About</a><a onclick="navTo('contact')">Contact</a></div>
+    <div class="foot-links"><a onclick="navTo('terms')">Terms</a><a onclick="navTo('privacy')">Privacy</a><a onclick="navTo('refund')">Refund</a><a onclick="navTo('cancellation')">Cancellation</a><a onclick="navTo('about')">About</a><a onclick="navTo('contact')">Contact</a></div>
     <div class="foot-copy">© 2026 Genzap · Made with ❤ in India</div>
   </div>
 </div>
@@ -1003,9 +1005,9 @@ body,button,input,textarea,select{font-family:Inter,'Noto Sans Devanagari',syste
 
     <div class="trust-box" style="margin-top:24px;">
       <b>🔒 भरोसे के साथ खरीदें</b><br>
-      पेमेंट करने के बाद अपना स्क्रीनशॉट Instagram पर भेजें — आपके क्रेडिट <b>24 घंटे के अंदर</b> आपके अकाउंट में जुड़ जाएँगे। हर पेमेंट की जाँच होती है, इसलिए आपका पैसा सुरक्षित है।
-      <a class="ig-btn" href="https://ig.me/m/genzap_official" target="_blank" rel="noopener" onclick="copyPaymentDetails()">📸 Instagram पर स्क्रीनशॉट भेजें</a>
-    <a class="ig-btn alt" href="mailto:genzap01@gmail.com" onclick="this.href=paymentMailHref()">✉️ ईमेल भेजें (डिटेल अपने-आप भर जाएगी)</a>
+      पेमेंट UPI या कार्ड से सुरक्षित तरीके से होता है और सफल होते ही आपके क्रेडिट <b>अपने-आप</b> अकाउंट में जुड़ जाते हैं।
+      <a class="ig-btn" href="https://www.instagram.com/genzap_official?srtk=MWZkYTlpNmlnbDUzeg==" target="_blank" rel="noopener">📸 Follow us on Instagram</a>
+      <div style="margin-top:10px;font-size:0.82rem;"><a onclick="navTo('refund')" style="color:var(--c);cursor:pointer;">Refund Policy</a> · <a onclick="navTo('cancellation')" style="color:var(--c);cursor:pointer;">Cancellation Policy</a> · <a onclick="navTo('terms')" style="color:var(--c);cursor:pointer;">Terms</a></div>
     </div>
     <div class="pg-title" style="margin-top:24px;">Buy More Credits</div>
     <p style="color:var(--t3);font-size:0.88rem;margin-bottom:16px;">1 credit = 1 generate • 3 paid credits = 1 photo edit (Starter plan or higher). Value &amp; Pro packs also unlock the AI Photo Pack. Credits never expire.</p>
@@ -1066,11 +1068,11 @@ body,button,input,textarea,select{font-family:Inter,'Noto Sans Devanagari',syste
       <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">क्रेडिट कैसे काम करते हैं? <span>+</span></div><div class="faq-a">1 क्रेडिट = टेक्स्ट से 1 इमेज। 3 खरीदे हुए क्रेडिट = 1 फ़ोटो अपलोड-एडिट (एडिट चलाना हमें ज़्यादा महँगा पड़ता है; मुफ़्त रोज़ाना क्रेडिट सिर्फ़ टेक्स्ट-से-इमेज के लिए हैं)। क्रेडिट कभी expire नहीं होते।</div></div>
       <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">क्या खरीदे हुए क्रेडिट कभी ख़त्म (expire) होते हैं? <span>+</span></div><div class="faq-a">नहीं, एक बार खरीदे गए क्रेडिट कभी expire नहीं होते — जब चाहें इस्तेमाल करें।</div></div>
       <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">मेरा क्रेडिट बैलेंस कहाँ दिखेगा? <span>+</span></div><div class="faq-a">लॉगिन के बाद ऊपर की नेवबार में हर पेज पर आपके कुल क्रेडिट दिखते हैं। मुफ़्त और खरीदे हुए क्रेडिट का अलग हिसाब &quot;Your Credits&quot; पेज (💎 आइकन) पर है।</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">क्रेडिट खरीदने के लिए पेमेंट कैसे करूँ? <span>+</span></div><div class="faq-a">अभी Genzap सिर्फ़ मैन्युअल UPI पेमेंट लेता है। &quot;Buy Now&quot; दबाने पर आपको QR कोड और UPI ID मिलती है — किसी भी UPI ऐप (GPay, PhonePe, Paytm) से स्कैन करके या &quot;Pay in UPI App&quot; बटन से पेमेंट करें। हर पेमेंट के साथ एक अलग Reference Code मिलता है।</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">पेमेंट के बाद क्रेडिट कब आएँगे? <span>+</span></div><div class="faq-a">पेमेंट के बाद अपना स्क्रीनशॉट और Reference Code हमें Instagram (@genzap_official) पर भेजें, या genzap01@gmail.com पर ईमेल करें। क्रेडिट आमतौर पर कुछ घंटों में, और ज़्यादा से ज़्यादा 24 घंटे में आपके अकाउंट में जोड़ दिए जाते हैं।</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Reference Code क्या है और ज़रूरी क्यों है? <span>+</span></div><div class="faq-a">हर पेमेंट के लिए एक अलग कोड बनता है (जैसे GZ-XXXXX)। इससे हम पहचान पाते हैं कि पेमेंट किस अकाउंट और किस पैक के लिए है — ताकि क्रेडिट जल्दी और सही अकाउंट में जुड़ें। स्क्रीनशॉट भेजते समय यह कोड ज़रूर लिखें।</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">क्रेडिट खरीदने के लिए पेमेंट कैसे करूँ? <span>+</span></div><div class="faq-a">&quot;Buy Now&quot; दबाने पर PayU का सुरक्षित पेमेंट पेज खुलता है — UPI (GPay, PhonePe, Paytm), कार्ड या नेटबैंकिंग से पेमेंट करें। पेमेंट सफल होते ही क्रेडिट अपने-आप आपके अकाउंट में जुड़ जाते हैं।</div></div> 
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">पेमेंट के बाद क्रेडिट कब आएँगे? <span>+</span></div><div class="faq-a">पेमेंट सफल होते ही, आमतौर पर कुछ सेकंड से कुछ मिनट में, क्रेडिट अपने-आप जुड़ जाते हैं। पेज रिफ्रेश करके Credits पेज देखें। फिर भी न दिखें तो हमें Instagram (@genzap_official) या genzap01@gmail.com पर लिखें।</div></div> 
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">पेमेंट में दिक्कत हो तो सपोर्ट को क्या भेजूँ? <span>+</span></div><div class="faq-a">पेमेंट का स्क्रीनशॉट (तारीख़/समय के साथ) और अपने अकाउंट की ईमेल भेजें। इससे हम पेमेंट और अकाउंट जल्दी पहचान पाते हैं।</div></div> 
       <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">क्या यह UPI ID Genzap की अपनी है? <span>+</span></div><div class="faq-a">Genzap अभी एक छोटी, अकेले चलाई जा रही टीम है, इसलिए बिज़नेस पेमेंट गेटवे शुरू होने तक पेमेंट एक वेरिफ़ाइड पर्सनल UPI अकाउंट में आते हैं। क्रेडिट जोड़ने से पहले हर पेमेंट को हाथ से जाँचा जाता है।</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">मैंने पेमेंट कर दिया पर क्रेडिट नहीं मिले — अब क्या करूँ? <span>+</span></div><div class="faq-a">पहले देखें कि आपने स्क्रीनशॉट और Reference Code Instagram या ईमेल पर भेजा है या नहीं। अगर 24 घंटे से ज़्यादा हो गए हैं, तो हमें Instagram (@genzap_official) पर या genzap01@gmail.com पर पेमेंट स्क्रीनशॉट, तारीख़/समय और अपने अकाउंट की ईमेल के साथ दोबारा लिखें। आपका पैसा सुरक्षित है — हम हर मामला देखते हैं।</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">मैंने पेमेंट कर दिया पर क्रेडिट नहीं मिले — अब क्या करूँ? <span>+</span></div><div class="faq-a">पहले पेज रिफ्रेश करके Credits पेज देखें, कभी-कभी कुछ मिनट लग जाते हैं। फिर भी क्रेडिट न दिखें तो हमें Instagram (@genzap_official) पर या genzap01@gmail.com पर पेमेंट स्क्रीनशॉट, तारीख़/समय और अपने अकाउंट की ईमेल के साथ लिखें। आपका पैसा सुरक्षित है — हम हर मामला देखते हैं।</div></div> 
       <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">पेमेंट फ़ेल हुआ पर पैसे कट गए? <span>+</span></div><div class="faq-a">ऐसे मामलों में आपका बैंक 5-7 दिन में रकम अपने-आप वापस कर देता है। अगर क्रेडिट नहीं मिले, तो पेमेंट स्क्रीनशॉट के साथ Instagram (@genzap_official) या genzap01@gmail.com पर लिखें — हम तुरंत क्रेडिट जोड़ देंगे।</div></div>
       <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">क्या रिफ़ंड मिलता है? <span>+</span></div><div class="faq-a">बिना इस्तेमाल किए खरीदे हुए क्रेडिट का रिफ़ंड 7 दिन के अंदर माँगने पर मिल सकता है। जो क्रेडिट इस्तेमाल हो चुके हैं उनका रिफ़ंड नहीं होता।</div></div>
       <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">मुफ़्त रोज़ाना लिमिट कब रीसेट होती है? <span>+</span></div><div class="faq-a">लिमिट हर दिन आधी रात को आपके डिवाइस के लोकल समय के हिसाब से रीसेट होती है।</div></div>
@@ -1220,6 +1222,7 @@ body,button,input,textarea,select{font-family:Inter,'Noto Sans Devanagari',syste
 <div class="page" id="page-terms"><div class="fp"><button class="back-btn" onclick="navTo('home')">← Back</button>
 <h2>📄 Terms & Conditions</h2>
 <p>Last updated: 2026</p>
+<p>This website is operated by Genzap (legal name: Najama Khatoon, Vill-Banchhihuli, PO-Mathlohiyar, Ward No. 05, District East Champaran, Motihari – 845422, Bihar, India).</p>
 <p>Welcome to Genzap. These Terms govern your use of our website and services. By creating an account or generating images on Genzap, you agree to the terms laid out below. Please read them carefully.</p>
 <h3>1. Who Can Use Genzap</h3>
 <p>You must be at least 13 years old to create an account. If you are under 18, you should have a parent or guardian's permission to use this service. By using Genzap, you confirm that the information you provide during signup is accurate.</p>
@@ -1228,7 +1231,9 @@ body,button,input,textarea,select{font-family:Inter,'Noto Sans Devanagari',syste
 <h3>3. Acceptable Use</h3>
 <p>Genzap is built to help people create and edit images creatively. To keep the platform safe for everyone, you agree not to use it to generate content that is illegal, sexually explicit, hateful, violent, or intended to harass or impersonate someone without their consent. We reserve the right to suspend or terminate accounts that violate this policy, without prior notice, if necessary.</p>
 <h3>4. Free Usage & Paid Credits</h3>
-<p>Genzap offers a limited number of free image generations, refreshed daily. Additional generations may be purchased as credit packs or through a subscription. Prices, limits, and features may change over time as the service evolves — we will always try to communicate major changes clearly on this page.</p>
+<p>Genzap offers a limited number of free text-to-image generations, refreshed daily. Additional generations may be purchased as credit packs. Prices, limits, and features may change over time as the service evolves — we will always try to communicate major changes clearly on this page.</p>
+<p>Photo editing, Templates (Background Remover, Restore Old Photo, Enhance Image) and Viral Prompts need the Starter plan or higher and use 3 paid credits each; free daily credits cannot be used for them. The AI Photo Pack (15 credits) and Outfit Checker (12 credits) need the Value or Pro plan. If a look fails, its credits are refunded automatically. Purchased credits do not expire.</p>
+<p>Payments are processed securely by PayU (UPI, cards, netbanking). Your credits are added automatically after a successful payment. If they do not show up, contact us on Instagram or by email with your payment screenshot and your account email. Please read our <a onclick="navTo('refund')" style="color:var(--c);cursor:pointer;">Return &amp; Refund Policy</a> and <a onclick="navTo('cancellation')" style="color:var(--c);cursor:pointer;">Cancellation Policy</a>.</p>
 <h3>5. Content Ownership</h3>
 <p>You retain rights to the images you generate through Genzap, subject to the underlying rights of any photo you upload. You are responsible for ensuring you have the right to upload and edit any photo you submit — including photos of yourself or others who have given consent.</p>
 <h3>6. Community Sharing</h3>
@@ -1243,6 +1248,34 @@ body,button,input,textarea,select{font-family:Inter,'Noto Sans Devanagari',syste
 <p>Questions about these Terms? Reach out at <a href="mailto:genzap01@gmail.com">genzap01@gmail.com</a>.</p>
 </div></div>
 
+<div class="page" id="page-refund"><div class="fp"><button class="back-btn" onclick="navTo('home')">← Back</button>
+<h2>💸 Return &amp; Refund Policy</h2>
+<p>Last updated: October 2026</p>
+<p>Genzap sells digital credits that are used to create images with AI. We do not sell or ship any physical product, so there are no product returns. This page explains when and how refunds are made.</p>
+<h3>1. Credits already added</h3>
+<p>Once credits have been added to your account after a successful payment, they cannot be returned or refunded, because every image created uses real AI processing that we pay for. Credits never expire.</p>
+<h3>2. Failed images</h3>
+<p>If an image or look fails to generate, the credits used for it are returned to your account automatically. You do not need to ask.</p>
+<h3>3. Payment deducted but credits not added</h3>
+<p>If money was deducted but your credits did not appear, write to us within 7 days of the payment at <a href="mailto:genzap01@gmail.com">genzap01@gmail.com</a> or on Instagram <a href="https://www.instagram.com/genzap_official/" target="_blank" rel="noopener">@genzap_official</a>. Send the payment screenshot (with date, time and transaction/UTR number) and your account email. After checking, we will either add the credits or refund the amount.</p>
+<h3>4. Duplicate payments</h3>
+<p>If you were charged more than once for the same purchase, the extra payment is refunded.</p>
+<h3>5. Refund mode and time</h3>
+<p>An approved refund is sent back to the same payment method (UPI, card or bank account) that was used for the payment, usually within 5–7 working days. The exact time depends on your bank.</p>
+<p>See also: <a onclick="navTo('cancellation')" style="color:var(--c);cursor:pointer;">Cancellation Policy</a> · <a onclick="navTo('contact')" style="color:var(--c);cursor:pointer;">Contact Us</a></p>
+</div></div>
+
+<div class="page" id="page-cancellation"><div class="fp"><button class="back-btn" onclick="navTo('home')">← Back</button>
+<h2>🚫 Cancellation Policy</h2>
+<p>Last updated: October 2026</p>
+<h3>1. No subscriptions</h3>
+<p>Genzap has no subscriptions and no auto-renewal. Every credit pack is a one-time purchase, so there is nothing to cancel later and you are never charged again automatically.</p>
+<h3>2. Cancelling before payment is completed</h3>
+<p>An order can be cancelled only until its payment is completed (the payment page stays open for a few minutes). You can cancel by closing the payment page or pressing the back/cancel button. If the payment is not completed, no money is charged. If an amount was deducted but the order shows as failed, it is returned by your bank or payment provider, usually within 5–7 working days.</p>
+<h3>3. After a successful payment</h3>
+<p>Once a payment is successful and the credits are added to your account, the order cannot be cancelled. If something went wrong with a payment, please read our <a onclick="navTo('refund')" style="color:var(--c);cursor:pointer;">Return &amp; Refund Policy</a> or write to <a href="mailto:genzap01@gmail.com">genzap01@gmail.com</a>.</p>
+</div></div>
+
 <!-- PRIVACY -->
 <div class="page" id="page-privacy"><div class="fp"><button class="back-btn" onclick="navTo('home')">← Back</button>
 <h2>🔒 Privacy Policy</h2>
@@ -1255,7 +1288,7 @@ body,button,input,textarea,select{font-family:Inter,'Noto Sans Devanagari',syste
 <h3>3. How We Use Your Data</h3>
 <p>We use your data to operate and improve Genzap — to generate your images, maintain your history, prevent misuse of free credits, and understand overall usage patterns. We do not sell your personal data to third parties.</p>
 <h3>4. Third-Party Services</h3>
-<p>Genzap uses trusted third-party services to function — including Supabase for authentication and storage, and AI image-generation providers to process your prompts and photos. These providers only receive the minimum data needed to perform their function.</p>
+<p>Genzap uses trusted third-party services to function — including Supabase for authentication and storage, AI image-generation providers to process your prompts and photos, and PayU to process payments. Your card, UPI or bank details are entered on PayU's secure page and are never stored by Genzap; we only keep the order amount, credits added and the time of purchase. These providers only receive the minimum data needed to perform their function.</p>
 <h3>5. Data Security</h3>
 <p>All account and generation data is stored on encrypted servers with access controls in place. While no system is 100% secure, we take reasonable steps to protect your information.</p>
 <h3>6. Your Choices</h3>
@@ -1278,12 +1311,14 @@ body,button,input,textarea,select{font-family:Inter,'Noto Sans Devanagari',syste
 <p>Most AI tools are built for everyone, everywhere — which means they're built for no one in particular. Genzap focuses on what's actually trending here: festival looks, wedding and pre-wedding styles, and the visual trends moving through Instagram and WhatsApp right now. We add new styles regularly, based on what's actually trending.</p>
 <h3>Where We're Based</h3>
 <p>Genzap is built and run out of Motihari, Bihar, India 🇮🇳 — a small team working to make good design tools accessible to everyone, not just people who already know how to use them.</p>
+<h3>Business Details</h3>
+<p>Trade name: Genzap<br>Legal name: Najama Khatoon<br>Registered address: Vill-Banchhihuli, PO-Mathlohiyar, Ward No. 05, District East Champaran, Motihari – 845422, Bihar, India</p>
 <h3>Get in Touch</h3>
 <p>Questions, feedback, or ideas for a style we should add? Write to us at <a href="mailto:genzap01@gmail.com">genzap01@gmail.com</a>.</p>
 </div></div>
 
 <!-- CONTACT -->
-<div class="page" id="page-contact"><div class="fp"><button class="back-btn" onclick="navTo('home')">← Back</button><h2>✉️ Contact Us</h2><p>We'd love to hear from you!</p><div class="ccard"><div class="citem"><div class="cico">📧</div><div><div class="clbl">Email</div><div class="cval">genzap01@gmail.com</div></div></div><div class="citem"><div class="cico">📸</div><div><div class="clbl">Instagram</div><div class="cval"><a href="https://www.instagram.com/genzap_official/" target="_blank" rel="noopener" style="color:inherit;">@genzap_official</a></div></div></div><div class="citem"><div class="cico">⏰</div><div><div class="clbl">Response Time</div><div class="cval">Within 24 hours</div></div></div><div class="citem"><div class="cico">📍</div><div><div class="clbl">Location</div><div class="cval">Motihari, Bihar, India</div></div></div></div><h3>For Support</h3><p>Having issues? Message us on Instagram or email us with your account email and describe the problem.</p><p>कोई समस्या है? Instagram पर हमें मैसेज करें या ईमेल करें — हम 24 घंटे के अंदर जवाब देते हैं।</p><a class="ig-btn" href="https://ig.me/m/genzap_official" target="_blank" rel="noopener">📸 Instagram पर मैसेज करें</a>
+<div class="page" id="page-contact"><div class="fp"><button class="back-btn" onclick="navTo('home')">← Back</button><h2>✉️ Contact Us</h2><p>We'd love to hear from you!</p><div class="ccard"><div class="citem"><div class="cico">📧</div><div><div class="clbl">Email</div><div class="cval">genzap01@gmail.com</div></div></div><div class="citem"><div class="cico">📸</div><div><div class="clbl">Instagram</div><div class="cval"><a href="https://www.instagram.com/genzap_official/" target="_blank" rel="noopener" style="color:inherit;">@genzap_official</a></div></div></div><div class="citem"><div class="cico">⏰</div><div><div class="clbl">Response Time</div><div class="cval">Within 24 hours</div></div></div><div class="citem"><div class="cico">📍</div><div><div class="clbl">Location</div><div class="cval">Motihari, Bihar, India</div></div></div><div class="citem"><div class="cico">🏢</div><div><div class="clbl">Business</div><div class="cval">Genzap — legal name: Najama Khatoon<br>Vill-Banchhihuli, PO-Mathlohiyar, Ward No. 05, District East Champaran, Motihari – 845422, Bihar, India</div></div></div></div><h3>For Support</h3><p>Having issues? Message us on Instagram or email us with your account email and describe the problem.</p><p>कोई समस्या है? Instagram पर हमें मैसेज करें या ईमेल करें — हम 24 घंटे के अंदर जवाब देते हैं।</p><a class="ig-btn" href="https://ig.me/m/genzap_official" target="_blank" rel="noopener">📸 Instagram पर मैसेज करें</a>
     <a class="ig-btn alt" href="mailto:genzap01@gmail.com" onclick="this.href=supportMailHref()">✉️ ईमेल भेजें</a></div></div>
 
 <!-- AUTH MODAL -->
@@ -1488,6 +1523,17 @@ async function workerFetch(init) {
   const headers = { ...(init.headers || {}) };
   try { const { data } = await sb.auth.getSession(); if (data && data.session && data.session.access_token) headers.Authorization = 'Bearer ' + data.session.access_token; } catch (e) {}
   return fetch(WORKER_URL, { ...init, headers });
+}
+
+// Credits are charged and refunded by the Worker (3 per photo job). Each job/look sends its own random
+// charge_ref; repeating the same ref (retry of a look) is free on the server.
+function newChargeRef() {
+  try { return crypto.randomUUID().replace(/-/g, ''); }
+  catch (e) { return (Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2)).slice(0, 40); }
+}
+// A retried look that still came back unchanged: ask the Worker to refund it (it checks that a retry really happened).
+async function claimRefund(ref) {
+  try { await workerFetch({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'refund', charge_ref: ref }) }); } catch (e) { /* best effort */ }
 }
 const GENZAP_ICON_DATA_URI = "data:image/png;base64,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";
 let _watermarkIconImgPromise = null;
@@ -2076,9 +2122,7 @@ async function startOutfitChecker() {
   const txtEl = document.getElementById('otfLoadTxt');
   fillEl.style.width = '5%';
 
-  // Deducted UPFRONT; each failed look is refunded below.
-  await sb.from('profiles').update({ credits: userCredits - TOTAL_COST }).eq('id', currentUser.id);
-  updateCreditsDisplay();
+  // The Worker charges 3 credits per look and refunds a look that fails.
 
   const faceUrl = await persistInputImage(otfFace.base64, otfFace.mime);
 
@@ -2100,7 +2144,8 @@ async function startOutfitChecker() {
             prompt,
             model: 'xai/grok-imagine',
             operation: 'edit',
-            image: collageB64
+            image: collageB64,
+            charge_ref: newChargeRef()
           })
         });
         if (!resp.ok) throw new Error(`Failed on ${pose.label} (${resp.status})`);
@@ -2119,11 +2164,7 @@ async function startOutfitChecker() {
 
     if (otfResults.length === 0) throw new Error('No looks could be generated. Your credits have been refunded.');
 
-    if (failCount > 0) {
-      const balanceNow = await getLiveCredits();
-      await sb.from('profiles').update({ credits: balanceNow + failCount * OUTFIT_PER_LOOK_COST }).eq('id', currentUser.id);
-      updateCreditsDisplay();
-    }
+    updateCreditsDisplay();
 
     fillEl.style.width = '100%';
     logEvent('photo_pack_success', { theme: 'Outfit Checker', successCount: otfResults.length, failCount });
@@ -2146,8 +2187,6 @@ async function startOutfitChecker() {
       ? `${otfResults.length}/${OUTFIT_LOOK_COUNT} looks ready — ${failCount} failed look ke credits refund ho gaye`
       : 'Your outfit looks are ready! 👗', 'ok');
   } catch (err) {
-    const balanceNow = await getLiveCredits();
-    await sb.from('profiles').update({ credits: balanceNow + TOTAL_COST }).eq('id', currentUser.id);
     updateCreditsDisplay();
     document.getElementById('otfLoadingArea').style.display = 'none';
     document.getElementById('otfUploadSection').style.display = 'block';
@@ -2201,7 +2240,7 @@ setInterval(tickPackSliders, 4000);
 
 // ===== Pack prompt library (rows live in Supabase `pack_prompts`, added from Admin > Packs) =====
 async function fetchPackPrompts(key, gender, tag = '') {
-  const base = () => sb.from('pack_prompts').select('label,prompt_text,gender,tag').eq('pack_key', key).eq('active', true).in('gender', ['any', gender]).limit(500);
+  const base = () => sb.from('pack_prompts_public').select('id,label,gender,tag').eq('pack_key', key).eq('active', true).in('gender', ['any', gender]).limit(500);
   try {
     // A chosen tag uses only that tag. "Surprise me" uses the general (untagged) prompts.
     let q = base(); q = tag ? q.eq('tag', tag) : q.is('tag', null);
@@ -2211,24 +2250,29 @@ async function fetchPackPrompts(key, gender, tag = '') {
     return rows;
   } catch (e) { return []; }
 }
-// Approximate next dates, used only to list upcoming festivals first and mark them "Soon". Update once a year.
+// Approximate dates, used only to list upcoming festivals first and mark them "Soon". Each festival can hold
+// several dates (2026 + 2027): the next upcoming one is used. Add the next year's dates once a year (by Sep 2027).
 const FESTIVAL_DATES = {
-  'Navratri & Garba': '2026-10-11', 'Durga Puja': '2026-10-16', 'Dussehra': '2026-10-20', 'Karwa Chauth': '2026-10-29',
-  'Diwali': '2026-11-08', 'Raksha Bandhan & Bhai Dooj': '2026-11-11', 'Chhath Puja': '2026-11-15', 'Guru Nanak Jayanti': '2026-11-24',
-  'Christmas': '2026-12-25', 'Lohri': '2027-01-13', 'Makar Sankranti': '2027-01-14', 'Pongal': '2027-01-14',
-  'Independence & Republic Day': '2027-01-26', 'Vasant Panchami': '2027-02-11', 'Mahashivratri': '2027-03-06', 'Eid': '2027-03-10',
-  'Holi': '2027-03-22', 'Ugadi & Gudi Padwa': '2027-04-07', 'Baisakhi': '2027-04-14', 'Ram Navami': '2027-04-15'
+  'Navratri & Garba': ['2026-10-11', '2027-09-30'], 'Durga Puja': ['2026-10-16', '2027-10-05'], 'Dussehra': ['2026-10-20', '2027-10-09'],
+  'Karwa Chauth': ['2026-10-29', '2027-10-18'], 'Diwali': ['2026-11-08', '2027-10-29'],
+  'Raksha Bandhan & Bhai Dooj': ['2026-11-11', '2027-08-17', '2027-10-31'], 'Chhath Puja': ['2026-11-15', '2027-11-04'],
+  'Guru Nanak Jayanti': ['2026-11-24', '2027-11-24'], 'Christmas': ['2026-12-25', '2027-12-25'],
+  'Lohri': '2027-01-13', 'Makar Sankranti': '2027-01-14', 'Pongal': '2027-01-14',
+  'Independence & Republic Day': ['2027-01-26', '2027-08-15'], 'Vasant Panchami': '2027-02-11', 'Mahashivratri': '2027-03-06', 'Eid': '2027-03-10',
+  'Holi': '2027-03-22', 'Ugadi & Gudi Padwa': '2027-04-07', 'Baisakhi': '2027-04-14', 'Ram Navami': '2027-04-15',
+  'Janmashtami': '2027-08-25', 'Ganesh Chaturthi': '2027-09-04', 'Onam': '2027-09-12'
 };
 function festivalDays(name) {
-  const d = FESTIVAL_DATES[name]; if (!d) return null;
-  const diff = Math.round((new Date(d + 'T00:00:00') - new Date(new Date().toDateString())) / 86400000);
-  return diff >= -8 ? diff : null; // already passed (list is stale) -> treated as undated
+  const v = FESTIVAL_DATES[name]; if (!v) return null;
+  const today = new Date(new Date().toDateString());
+  const diffs = [].concat(v).map(d => Math.round((new Date(d + 'T00:00:00') - today) / 86400000)).filter(x => x >= -8);
+  return diffs.length ? Math.min(...diffs) : null; // every date passed (list is stale) -> treated as undated
 }
 async function loadPackTags(key) {
   const wrap = document.getElementById('packTagWrap'), box = document.getElementById('packTagChips');
   wrap.style.display = 'none'; selectedPackTag = '';
   try {
-    const { data } = await sb.from('pack_prompts').select('tag').eq('pack_key', key).eq('active', true).not('tag', 'is', null).limit(5000);
+    const { data } = await sb.from('pack_prompts_public').select('tag').eq('pack_key', key).eq('active', true).not('tag', 'is', null).limit(5000);
     const tags = [...new Set((data || []).map(r => r.tag).filter(Boolean))].sort();
     if (tags.length < 2 || selectedPackThemeKey !== key) return;
     const groups = {};
@@ -2257,7 +2301,7 @@ let _packExamplesLoaded = false;
 async function loadPackExamples() {
   if (_packExamplesLoaded) return;
   try {
-    const { data } = await sb.from('pack_prompts').select('pack_key,example_url').eq('active', true).not('example_url', 'is', null).order('created_at', { ascending: false }).limit(400);
+    const { data } = await sb.from('pack_prompts_public').select('pack_key,example_url').eq('active', true).not('example_url', 'is', null).order('created_at', { ascending: false }).limit(400);
     Object.values(PHOTO_PACK_THEMES).forEach(t => { t.previewImages = []; });
     const { data: sc } = await sb.from('pack_showcase').select('pack_key,image_url,sort_order').order('sort_order', { ascending: true }).limit(200);
     PACK_SHOWCASE = {};
@@ -2364,11 +2408,7 @@ async function startPhotoPack() {
   if (dbAll.length >= 5) dbPicks.push(...pickPackPrompts(dbAll));
   const subjectWord = selectedPackGender === 'female' ? 'woman' : 'man';
 
-  // Credits are deducted UPFRONT, before any Mesh API spend happens, so real
-  // API cost is never left uncharged if something fails partway through.
-  // Any look that fails is refunded (3 credits each) once the batch finishes.
-  await sb.from('profiles').update({ credits: userCredits - PACK_COST }).eq('id', currentUser.id);
-  updateCreditsDisplay();
+  // The Worker charges 3 credits per look before any Mesh spend and refunds a look that fails.
 
   // Save the selfie once (not per-look) so it's linked to all 5 results below.
   const selfieUrl = await persistInputImage(packSelfieBase64, packSelfieMime);
@@ -2384,17 +2424,21 @@ async function startPhotoPack() {
       fillEl.style.width = `${((i) / 5) * 85 + 10}%`;
 
       const extraLine = extraPrompt ? ` Also incorporate: ${extraPrompt}.` : '';
-      const sceneText = dbp ? dbp.prompt_text.replace(/\{subject\}/g, subjectWord).replace(/\s*$/, '.').replace(/\.+$/, '.') : `Subject is ${wardrobeLine}. ${bg.desc}, ${pose}.`;
+      const sceneText = `Subject is ${wardrobeLine}. ${bg.desc}, ${pose}.`; // built-in looks only; DB looks are built on the Worker
       const STRICT_FACE_INSTRUCTION = `Maintain exact face, facial structure, skin tone, facial features, identity from reference image strictly. Do not morph or alter the face. Highly detailed photorealistic face identity preservation. Keep the face large, sharp and clearly visible in the frame, never hidden or turned fully away. ${sceneText}${extraLine} 8k UHD portrait, hyperrealistic, master photography`;
       const NEGATIVE_QUALITY_BOOST = 'no face distortion, no altered identity, no morphed face, no blur, no watermark, natural facial anatomy, symmetrical eyes';
       const fullEditPrompt = `${STRICT_FACE_INSTRUCTION}, ${NEGATIVE_QUALITY_BOOST}`;
 
+      const lookRef = newChargeRef(); // same ref for the retry of this look = free on the server
       try {
         const callPack = async (extra) => {
+          const payload = dbp
+            ? { pack_prompt_id: dbp.id, gender: selectedPackGender, extra: extraPrompt, retry: !!extra, model: 'xai/grok-imagine', image: packSelfieBase64, charge_ref: lookRef }
+            : { prompt: fullEditPrompt + extra, model: 'xai/grok-imagine', image: packSelfieBase64, charge_ref: lookRef };
           const resp = await workerFetch({
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: fullEditPrompt + extra, model: 'xai/grok-imagine', image: packSelfieBase64 })
+            body: JSON.stringify(payload)
           });
           if (!resp.ok) throw new Error(`Failed on ${bg.label} (${resp.status})`);
           const resData = await resp.json();
@@ -2407,7 +2451,7 @@ async function startPhotoPack() {
         if (await isUnchangedCopy(packSelfieBase64, packSelfieMime, outUrl)) {
           // Model returned the input photo: retry once with a stronger instruction, else refund this look.
           outUrl = await callPack(' IMPORTANT: the result must clearly differ from the input photo in pose and camera framing. Never return the same photo.');
-          if (await isUnchangedCopy(packSelfieBase64, packSelfieMime, outUrl)) throw new Error(`${bg.label} came back unchanged`);
+          if (await isUnchangedCopy(packSelfieBase64, packSelfieMime, outUrl)) { await claimRefund(lookRef); throw new Error(`${bg.label} came back unchanged`); }
         }
 
         const publicUrl = await persistGeneration(outUrl, `Photo Pack (${currentTheme.name}): ${bg.label}`, selfieUrl);
@@ -2423,12 +2467,7 @@ async function startPhotoPack() {
       throw new Error('No looks could be generated. Your credits have been refunded.');
     }
 
-    if (failCount > 0) {
-      const refund = failCount * PER_LOOK_COST;
-      const balanceNow = await getLiveCredits();
-      await sb.from('profiles').update({ credits: balanceNow + refund }).eq('id', currentUser.id);
-      updateCreditsDisplay();
-    }
+    updateCreditsDisplay();
 
     fillEl.style.width = '100%';
     txtEl.textContent = failCount > 0
@@ -2458,8 +2497,6 @@ async function startPhotoPack() {
       : 'Photo Pack Ready! 5 looks created 🎉', 'ok');
 
   } catch (err) {
-    const balanceNow = await getLiveCredits();
-    await sb.from('profiles').update({ credits: balanceNow + PACK_COST }).eq('id', currentUser.id);
     updateCreditsDisplay();
 
     document.getElementById('packLoadingArea').style.display = 'none';
@@ -2587,7 +2624,7 @@ async function runHiddenPromptTool(prefix, toastLabel) {
     const resp = await workerFetch({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: TOOL_PROMPTS[prefix], model: 'xai/grok-imagine', image: state.base64 })
+      body: JSON.stringify({ prompt: TOOL_PROMPTS[prefix], model: 'xai/grok-imagine', image: state.base64, charge_ref: newChargeRef() })
     });
     if (!resp.ok) throw new Error(`status ${resp.status}`);
     const data = await resp.json();
@@ -2603,10 +2640,7 @@ async function runHiddenPromptTool(prefix, toastLabel) {
     document.getElementById(prefix + 'Loading').style.display = 'none';
     document.getElementById(prefix + 'ResultArea').style.display = 'block';
 
-    if (willUseCredits) {
-      await sb.from('profiles').update({ credits: profileCredits - 3 }).eq('id', currentUser.id);
-      updateCreditsDisplay();
-    }
+    updateCreditsDisplay(); // the Worker already charged the 3 credits
     logEvent('edit_success', { hasUpload: true, usedCredits: true, tool: prefix }); // not counted in the free daily limit
     updateLimitIndicator();
     toast(`${toastLabel} ready! ✨`, 'ok');
@@ -2665,9 +2699,10 @@ const TEMPLATES = [
     setTimeout(() => document.getElementById('onboardModal').classList.add('open'), 600);
   }
   const hash = location.hash.replace('#','');
-  const pages = ['home','photopack','generate','prompts','viralgen','templates','explore','history','credits','faq','terms','privacy','about','contact','admin'];
+  const pages = ['home','photopack','generate','prompts','viralgen','templates','explore','history','credits','faq','terms','privacy','refund','cancellation','about','contact','admin'];
   if (hash && !hash.includes('access_token') && pages.includes(hash)) navTo(hash, false);
   else document.querySelectorAll('.si').forEach(b => b.classList.toggle('si-active', b.dataset.page === 'home'));
+  handlePayReturn();
 })();
 
 
@@ -3175,6 +3210,7 @@ async function startGen() {
     const dualMode = document.getElementById('dualGenToggle').checked && !uploadedImageBase64;
     // Note: dual mode disabled for edits — editing 2 versions of an uploaded photo is rarely useful and doubles cost unnecessarily.
 
+    const editChargeRef = newChargeRef();
     async function generateOnce() {
       let result;
       if (uploadedImageBase64) {
@@ -3186,7 +3222,7 @@ async function startGen() {
         const editResp = await workerFetch({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: editPrompt, model: 'xai/grok-imagine', image: editImage })
+          body: JSON.stringify({ prompt: editPrompt, model: 'xai/grok-imagine', image: editImage, charge_ref: editChargeRef })
         });
         if (!editResp.ok) {
           const errText = await editResp.text().catch(() => '');
@@ -3289,7 +3325,8 @@ async function finalizeGeneration(imgUrl, promptText, willUseCredits, profileCre
     }
   }
   if (willUseCredits && currentUser) {
-    await sb.from('profiles').update({ credits: profileCredits - creditsNeeded }).eq('id', currentUser.id);
+    // Edits are charged by the Worker; only text-to-image credits (after the free daily limit) are still deducted here.
+    if (!isEdit) await sb.from('profiles').update({ credits: profileCredits - creditsNeeded }).eq('id', currentUser.id);
     updateCreditsDisplay();
   }
   updateLimitIndicator();
@@ -3410,8 +3447,10 @@ async function applyWatermark(url) {
         const fontSize = Math.max(Math.round(img.width * 0.028), 14);
         const logoSize = fontSize * 1.4;
         ctx.font = `bold ${fontSize}px sans-serif`;
-        const text = 'Genzap';
-        const textWidth = ctx.measureText(text).width;
+        const textL = 'Gen', textR = 'zap';
+        const boltW = fontSize * 0.55, boltGap = fontSize * 0.08;
+        const wL = ctx.measureText(textL).width, wR = ctx.measureText(textR).width;
+        const textWidth = wL + boltGap + boltW + boltGap + wR;
         const boxW = logoSize + 8 + textWidth + 20;
         const boxH = logoSize + 14;
         const boxX = img.width - boxW - pad;
@@ -3438,7 +3477,20 @@ async function applyWatermark(url) {
         // Text
         ctx.fillStyle = '#1C1812';
         ctx.textBaseline = 'middle';
-        ctx.fillText(text, logoX + logoSize + 8, boxY + boxH / 2 + 1);
+        const tx = logoX + logoSize + 8, ty = boxY + boxH / 2 + 1;
+        ctx.fillText(textL, tx, ty);
+        // Brand bolt between N and Z
+        const bx = tx + wL + boltGap, bh = fontSize * 1.05, by = ty - bh / 2;
+        ctx.fillStyle = '#E8930C';
+        ctx.beginPath();
+        [[0.72, 0], [0.05, 0.56], [0.36, 0.56], [0.2, 1], [0.95, 0.4], [0.58, 0.4]].forEach(([px, py], i) => {
+          const X = bx + px * boltW, Y = by + py * bh;
+          if (i === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
+        });
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#1C1812';
+        ctx.fillText(textR, bx + boltW + boltGap, ty);
 
         URL.revokeObjectURL(localUrl);
         resolve(canvas.toDataURL('image/png'));
@@ -3629,7 +3681,6 @@ async function renderPrompts() {
 let viralCur = null, viralPhoto = { b64: null, mime: null }, isViralGen = false, viralLastUrl = null;
 async function fetchViralList(limit) {
   let r = await sb.from('viral_prompts_public').select('id,title,thumbnail_url,use_count').order('use_count', { ascending: false }).limit(limit);
-  if (r.error) r = await sb.from('viral_prompts').select('id,title,thumbnail_url,use_count').eq('active', true).order('use_count', { ascending: false }).limit(limit);
   return r;
 }
 function openViralDetail(i) {
@@ -3677,20 +3728,11 @@ async function startViralGen() {
   isViralGen = true;
   document.getElementById('vgUploadSection').style.display = 'none';
   document.getElementById('vgLoading').style.display = 'flex';
-  await sb.from('profiles').update({ credits: have - COST }).eq('id', currentUser.id);
-  updateCreditsDisplay();
   try {
-    // 1) Preferred: send only the style id. The updated Worker (worker-v2.js) looks the prompt up on the server,
-    //    so the browser never sees it. 2) Fallback for the old Worker: fetch the prompt text here.
+    // Only the style id is sent. The Worker looks the prompt up on the server, so the browser never sees it.
     const post = (body) => workerFetch({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    let resp = await post({ model: 'xai/grok-imagine', image: viralPhoto.b64, viral_id: viralCur.id });
-    if (!resp.ok) {
-      const firstStatus = resp.status;
-      const { data, error } = await sb.from('viral_prompts').select('prompt_text').eq('id', viralCur.id).single();
-      if (error || !data || !data.prompt_text) throw new Error(`Failed (${firstStatus})`);
-      resp = await post({ model: 'xai/grok-imagine', image: viralPhoto.b64, prompt: data.prompt_text });
-    }
-    if (!resp.ok) throw new Error(`Failed (${resp.status})`);
+    const resp = await post({ model: 'xai/grok-imagine', image: viralPhoto.b64, viral_id: viralCur.id, charge_ref: newChargeRef() });
+    if (!resp.ok) { const e = await resp.json().catch(() => ({})); throw new Error(e.error || `Failed (${resp.status})`); }
     const res = await resp.json(), item = res?.data?.[0];
     let url = item?.url || (item?.b64_json ? `data:image/png;base64,${item.b64_json}` : null);
     if (!url) throw new Error('No image returned');
@@ -3699,13 +3741,12 @@ async function startViralGen() {
     document.getElementById('vgResultImg').src = url;
     document.getElementById('vgLoading').style.display = 'none';
     document.getElementById('vgResult').style.display = 'block';
+    updateCreditsDisplay(); // the Worker already charged the 3 credits
     logEvent('edit_success', { hasUpload: true, usedCredits: true, tool: 'viral' });
-    sb.rpc('bump_viral_use', { pid: String(viralCur.id) }).then(r => { if (r && r.error) sb.from('viral_prompts').update({ use_count: (viralCur.uses || 0) + 1 }).eq('id', viralCur.id).then(() => {}); });
+    sb.rpc('bump_viral_use', { pid: String(viralCur.id) }).then(() => {});
     // History keeps only the style title, never the prompt text.
     persistInputImage(viralPhoto.b64, viralPhoto.mime).then(inUrl => persistGeneration(url, 'Viral: ' + viralCur.title, inUrl)).then(u => toast(u ? 'Saved to History (kept for 14 days) 🖼' : 'Could not save to History', u ? 'ok' : 'warn'));
   } catch (err) {
-    const now = await getLiveCredits();
-    await sb.from('profiles').update({ credits: now + COST }).eq('id', currentUser.id);
     updateCreditsDisplay();
     document.getElementById('vgLoading').style.display = 'none';
     document.getElementById('vgUploadSection').style.display = 'block';
@@ -3843,12 +3884,52 @@ function toggleFaq(el) {
 const GENZAP_UPI_ID = 'shahabullah1@ptyes';
 let currentPayment = null;
 
+// PayU payment: the Worker creates the order and signs the payment form (the amount is decided on the server).
+// If anything fails (payments not set up yet, network), the old manual UPI window opens instead.
 async function buyCredits(packName, price, credits) {
   if (!currentUser) {
     toast('Please log in/sign up first to buy credits', 'warn');
     openAuth('signup');
     return;
   }
+  try {
+    toast('पेमेंट पेज खुल रहा है…', 'ok');
+    const resp = await workerFetch({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'pay_create', pack_name: packName }) });
+    const d = await resp.json();
+    if (!resp.ok || !d.action_url || !d.fields) throw new Error(d.error || 'order failed');
+    logEvent('credit_purchase_interest', { pack: packName, price, credits, orderId: d.fields.txnid });
+    const form = document.createElement('form');
+    form.method = 'POST'; form.action = d.action_url; form.style.display = 'none';
+    Object.entries(d.fields).forEach(([k, v]) => { const i = document.createElement('input'); i.type = 'hidden'; i.name = k; i.value = v; form.appendChild(i); });
+    document.body.appendChild(form);
+    form.submit();
+  } catch (err) {
+    buyCreditsManual(packName, price, credits);
+  }
+}
+
+// After paying, PayU -> Worker -> back to /?pay_order=<id>. Ask the Worker to confirm and add the credits.
+async function handlePayReturn() {
+  const oid = new URLSearchParams(location.search).get('pay_order');
+  if (!oid) return;
+  history.replaceState(null, '', location.pathname + '#credits');
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { toast('पेमेंट का स्टेटस देखने के लिए लॉग इन करें', 'warn'); return; }
+  toast('पेमेंट की जाँच हो रही है…', 'ok');
+  for (let i = 0; i < 8; i++) {
+    try {
+      const resp = await workerFetch({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'pay_verify', order_id: oid }) });
+      const d = await resp.json();
+      if (d.status === 'PAID') { toast('पेमेंट सफल! क्रेडिट जुड़ गए ✅', 'ok'); navTo('credits'); return; }
+      if (d.status === 'FAILED' || d.status === 'NOT_FOUND') { toast('पेमेंट पूरा नहीं हुआ। चाहें तो दोबारा कोशिश करें।', 'warn'); navTo('credits'); return; }
+    } catch (e) { /* try again */ }
+    await new Promise(r => setTimeout(r, 2500));
+  }
+  toast('पेमेंट की पुष्टि में थोड़ा समय लग रहा है। कुछ देर बाद Credits पेज देखें; न दिखे तो हमें लिखें।', 'warn');
+  navTo('credits');
+}
+
+async function buyCreditsManual(packName, price, credits) {
   const refCode = 'GZ-' + Date.now().toString(36).toUpperCase();
   currentPayment = { packName, price, credits, refCode };
   try { localStorage.setItem('gz_last_payment', JSON.stringify(currentPayment)); } catch (e) {}
